@@ -1,33 +1,38 @@
-name: Validador de suma
+name: upload-artifact
 
 on:
   push:
     branches:
-      - 'test/**'
+      - test/**
+
+env:
+  json: '{"name": "pipelines","activity": 3,"module": 2,"isRequired": false}'
 
 jobs:
-  operaciones:
-    strategy:
-      matrix:
-        operacion: [suma, resta, multiplicacion, division]
-    name: realizar operacion
+  convert_and_upload_text_to_json:
+    name: Convert and upload text to JSON
     runs-on: ubuntu-latest
     steps:
-      - name: sumar 2 numeros
-        id: operacion
-        env: 
-          A: ${{ vars.A }}
-          B: ${{ vars.B }}
-          operacion: ${{ matrix.operacion }}
+      - name: Crear el id unico del contenido del json
+        id: hash 
         run: |
-          if [[ $operacion == "suma" ]]; then
-            resultado=$((A+B))
-          elif [[ $operacion == "resta" ]]; then
-            resultado=$((A-B))
-          elif [[ $operacion == "multiplicacion" ]]; then
-            resultado=$((A*B))
-          elif [[ $operacion == "division" ]]; then
-            resultado=$((A/B))
-          else
-            echo "Operacion no soportada"
-          fi
+          hash=$(echo -n "${{ env.json }}" | sha256sum | cut -d ' ' -f1)
+          echo hash=$hash >> $GITHUB_OUTPUT
+      - name: llamar al action de cache
+        uses: action/cache@v4
+        id: cache
+        with:
+          path: archivo.json
+          key: ${{ steps.hash.outputs.hash }}
+      - name: Convert to JSON
+        if: ${{ steps.cache.outputs.cache-hit != "true" }}
+        uses: devops-actions/json-to-file@v1.0.4
+        with:
+          json: ${{ env.json }}
+          filename: 'archivo.json'
+      - name: Upload JSON file
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact
+          path: archivo.json
+ 
