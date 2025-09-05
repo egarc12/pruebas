@@ -1,29 +1,36 @@
-### Crear un workflow con extensión .yml que:
-# Se ejecute cuando se haga un pull request hacia una rama feature/
-# Sobre la versión de ubuntu más reciente
-# Un step en bash que sume 2 números y muestre el resultado
-# Que se ejecute los jueves a las 9:35 hora Colombia
-
-name: Sumar 2 numeros
+name: Validador de suma
 
 on:
-  pull_request:
-    branches: 
-      - feature/**
-      - main
-  schedule:
-    - cron: "35 14 * * 4"
+  push:
+    branches:
+      - 'test/**'
 
 jobs:
-  sumar-numeros:
-    name: Sumar dos numeros y mostrar resultado
+  suma:
+    name: realizar suma
     runs-on: ubuntu-latest
+    outputs:
+      resultado: ${{ steps.operacion.outputs.suma }}
     steps:
-      - name: Sumar 2 numeros e imprimir el resultado
-        env:
-          A: 5
-          B: 10
+      - name: sumar 2 numeros
+        id: operacion
+        env: 
+          A: ${{ vars.A }}
+          B: ${{ vars.B }}
         run: |
           resultado=$((A+B))
-          echo $resultado
-          
+          echo suma=$resultado >> $GITHUB_OUTPUT
+  validacion:
+    name: validar si es mayor a 10
+    runs-on: ubuntu-latest
+    needs: suma
+    steps:
+      - name: Validar si la suma es mayor a 10
+        env:
+          res: ${{ needs.suma.outputs.resultado }}
+        run: |
+          if [[ $res -gt 10 ]]; then
+            echo "El resultado $res es mayor a 10"
+          else
+            echo "El resultado $res NO es mayor a 10"
+          fi
