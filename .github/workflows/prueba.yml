@@ -6,31 +6,28 @@ on:
       - 'test/**'
 
 jobs:
-  suma:
-    name: realizar suma
+  operaciones:
+    strategy:
+      matrix:
+        operacion: [suma, resta, multiplicacion, division]
+    name: realizar operacion
     runs-on: ubuntu-latest
-    outputs:
-      resultado: ${{ steps.operacion.outputs.suma }}
     steps:
       - name: sumar 2 numeros
         id: operacion
         env: 
           A: ${{ vars.A }}
           B: ${{ vars.B }}
+          operacion: ${{ matrix.operacion }}
         run: |
-          resultado=$((A+B))
-          echo suma=$resultado >> $GITHUB_OUTPUT
-  validacion:
-    name: validar si es mayor a 10
-    runs-on: ubuntu-latest
-    needs: suma
-    steps:
-      - name: Validar si la suma es mayor a 10
-        env:
-          res: ${{ needs.suma.outputs.resultado }}
-        run: |
-          if [[ $res -gt 10 ]]; then
-            echo "El resultado $res es mayor a 10"
+          if [[ $operacion == "suma" ]]; then
+            resultado=$((A+B))
+          elif [[ $operacion == "resta" ]];
+            resultado=$((A-B))
+          elif [[ $operacion == "multiplicacion" ]];
+            resultado=$((A*B))
+          elif [[ $operacion == "division" ]];
+            resultado=$((A/B))
           else
-            echo "El resultado $res NO es mayor a 10"
+            echo "Operacion no soportada"
           fi
