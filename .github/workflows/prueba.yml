@@ -19,7 +19,7 @@ jobs:
           hash=$(echo -n "${{ env.json }}" | sha256sum | cut -d ' ' -f1)
           echo hash=$hash >> $GITHUB_OUTPUT
       - name: llamar al action de cache
-        uses: action/cache@v4
+        uses: actions/cache@v4
         id: cache
         with:
           path: archivo.json
