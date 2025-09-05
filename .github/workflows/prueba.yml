@@ -22,11 +22,11 @@ jobs:
         run: |
           if [[ $operacion == "suma" ]]; then
             resultado=$((A+B))
-          elif [[ $operacion == "resta" ]];
+          elif [[ $operacion == "resta" ]]; then
             resultado=$((A-B))
-          elif [[ $operacion == "multiplicacion" ]];
+          elif [[ $operacion == "multiplicacion" ]]; then
             resultado=$((A*B))
-          elif [[ $operacion == "division" ]];
+          elif [[ $operacion == "division" ]]; then
             resultado=$((A/B))
           else
             echo "Operacion no soportada"
