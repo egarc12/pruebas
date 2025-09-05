@@ -6,7 +6,7 @@ on:
       - test/**
 
 env:
-  json: '{"name": "pipelines","activity": 3,"module": 2,"isRequired": false}'
+  json: '{"name": "pipelines","activity": 3,"module": 3,"isRequired": false}'
 
 jobs:
   convert_and_upload_text_to_json:
