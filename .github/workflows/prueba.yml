@@ -25,7 +25,7 @@ jobs:
           path: archivo.json
           key: ${{ steps.hash.outputs.hash }}
       - name: Convert to JSON
-        if: ${{ steps.cache.outputs.cache-hit != "true" }}
+        if: ${{ steps.cache.outputs.cache-hit != 'true' }}
         uses: devops-actions/json-to-file@v1.0.4
         with:
           json: ${{ env.json }}
